@@ -40,9 +40,9 @@ Perfect for internship reviews, mentor check-ins, and final submissions.
 | 🪟 **Glassmorphism UI** | Premium translucent cards, mesh gradients, and teal accent theme |
 | 🎬 **Framer Motion** | Smooth scroll reveals, hover effects, and page transitions |
 | 📱 **Fully Responsive** | Optimized for mobile, tablet, and desktop |
-| 🔗 **Submission Links** | GitHub + Vercel URL inputs under each of the 6 tasks |
-| 💾 **Auto-Save** | Links persist in `localStorage` — no backend required |
-| ✅ **URL Validation** | Valid links show a checkmark and open in a new tab |
+| 🔗 **Submission Links** | GitHub + Vercel links under each task — **shared for all visitors** |
+| 🌐 **Public URLs** | Links saved in `src/lib/data.ts` and deployed with the site |
+| ✅ **One-Click Open** | GitHub & Vercel buttons open in a new tab for everyone |
 | 🧩 **Modular Code** | Reusable components, typed data, clean folder structure |
 | ⚡ **Next.js App Router** | Fast builds, static pages, SEO-friendly metadata |
 
@@ -148,13 +148,23 @@ dashboard-intern/
 
 ## 🔗 How Submission Links Work
 
-1. Scroll to **Project Deliverables** on the dashboard.
-2. Under any task, find **Submission Links**.
-3. Paste your **GitHub repo URL** and **Vercel deploy URL**.
-4. Links save automatically in your browser (`localStorage`).
-5. Click the **↗** button to open a valid link in a new tab.
+Links are stored in **`src/lib/data.ts`** inside each project object as `githubUrl` and `vercelUrl`. They ship with every deploy, so **anyone** opening the dashboard can click **GitHub** or **Vercel** and open your repos.
 
-> **Note:** Links are stored locally per browser. For team sharing, consider exporting or documenting URLs separately.
+### Update your links
+
+1. Open `src/lib/data.ts`
+2. Edit `githubUrl` and `vercelUrl` for each task
+3. Push to GitHub — Vercel redeploys automatically
+
+```ts
+{
+  id: 1,
+  name: "Portfolio Website with Contact Backend",
+  githubUrl: "https://github.com/your-username/your-repo",
+  vercelUrl: "https://your-app.vercel.app",
+  // ...
+}
+```
 
 ---
 
