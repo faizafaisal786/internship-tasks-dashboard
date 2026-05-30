@@ -7,6 +7,8 @@ const STORAGE_KEY = "internship-project-links";
 export type ProjectLinks = {
   githubUrl: string;
   vercelUrl: string;
+  githubLocked?: boolean;
+  vercelLocked?: boolean;
 };
 
 type AllProjectLinks = Record<number, ProjectLinks>;
@@ -25,27 +27,66 @@ function writeAllLinks(links: AllProjectLinks) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(links));
 }
 
+function withAutoLock(links: ProjectLinks): ProjectLinks {
+  const githubUrl = links.githubUrl.trim();
+  const vercelUrl = links.vercelUrl.trim();
+  return {
+    ...links,
+    githubUrl,
+    vercelUrl,
+    githubLocked: links.githubLocked || isValidUrl(githubUrl),
+    vercelLocked: links.vercelLocked || isValidUrl(vercelUrl),
+  };
+}
+
 export function useProjectLinks(projectId: number) {
-  const [links, setLinks] = useState<ProjectLinks>({ githubUrl: "", vercelUrl: "" });
+  const [links, setLinks] = useState<ProjectLinks>({
+    githubUrl: "",
+    vercelUrl: "",
+    githubLocked: false,
+    vercelLocked: false,
+  });
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     const saved = readAllLinks()[projectId];
-    setLinks({
-      githubUrl: saved?.githubUrl ?? "",
-      vercelUrl: saved?.vercelUrl ?? "",
-    });
+    if (!saved) {
+      setHydrated(true);
+      return;
+    }
+
+    const next = withAutoLock(saved);
+    const all = readAllLinks();
+    const changed =
+      next.githubLocked !== saved.githubLocked ||
+      next.vercelLocked !== saved.vercelLocked;
+
+    if (changed) {
+      all[projectId] = next;
+      writeAllLinks(all);
+    }
+
+    setLinks(next);
     setHydrated(true);
   }, [projectId]);
 
   const updateLinks = useCallback(
     (partial: Partial<ProjectLinks>) => {
       setLinks((prev) => {
-        const next = { ...prev, ...partial };
+        const next: ProjectLinks = { ...prev };
+
+        if (partial.githubUrl !== undefined && !prev.githubLocked) {
+          next.githubUrl = partial.githubUrl;
+        }
+        if (partial.vercelUrl !== undefined && !prev.vercelLocked) {
+          next.vercelUrl = partial.vercelUrl;
+        }
+
+        const locked = withAutoLock(next);
         const all = readAllLinks();
-        all[projectId] = next;
+        all[projectId] = locked;
         writeAllLinks(all);
-        return next;
+        return locked;
       });
     },
     [projectId]
@@ -76,5 +117,8 @@ export function isValidUrl(value: string): boolean {
 export function openExternalUrl(value: string) {
   const href = normalizeUrl(value);
   if (!href) return;
-  window.open(href, "_blank", "noopener,noreferrer");
+  const opened = window.open(href, "_blank", "noopener,noreferrer");
+  if (!opened) {
+    window.location.assign(href);
+  }
 }
