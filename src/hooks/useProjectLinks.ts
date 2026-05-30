@@ -54,12 +54,27 @@ export function useProjectLinks(projectId: number) {
   return { links, updateLinks, hydrated };
 }
 
-export function isValidUrl(value: string): boolean {
-  if (!value.trim()) return false;
+/** Accepts URLs with or without https:// and returns a safe href, or null. */
+export function normalizeUrl(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+
   try {
-    const url = new URL(value.trim());
-    return url.protocol === "http:" || url.protocol === "https:";
+    const withProtocol = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+    const url = new URL(withProtocol);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    return url.href;
   } catch {
-    return false;
+    return null;
   }
+}
+
+export function isValidUrl(value: string): boolean {
+  return normalizeUrl(value) !== null;
+}
+
+export function openExternalUrl(value: string) {
+  const href = normalizeUrl(value);
+  if (!href) return;
+  window.open(href, "_blank", "noopener,noreferrer");
 }

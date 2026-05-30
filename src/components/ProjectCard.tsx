@@ -15,7 +15,7 @@ export default function ProjectCard({ project }: { project: Project }) {
       transition={{ duration: 0.5 }}
       className="glass-premium p-8 rounded-[2rem] flex flex-col h-full group relative overflow-hidden border border-white/5 hover:border-[#00838d]/30 transition-all duration-500"
     >
-      <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0">
+      <div className="absolute top-0 right-0 p-6 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-x-4 -translate-y-4 group-hover:translate-x-0 group-hover:translate-y-0 pointer-events-none">
         <ArrowUpRight className="w-6 h-6 text-[#00838d]" />
       </div>
 
@@ -54,7 +54,7 @@ export default function ProjectCard({ project }: { project: Project }) {
       <TaskSubmissionLinks projectId={project.id} taskNumber={project.id} />
 
       {/* Decorative background element */}
-      <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-[#00838d]/10 blur-[100px] rounded-full group-hover:bg-[#00838d]/20 transition-all duration-700" />
+      <div className="absolute -bottom-16 -right-16 w-32 h-32 bg-[#00838d]/10 blur-[100px] rounded-full group-hover:bg-[#00838d]/20 transition-all duration-700 pointer-events-none" />
     </motion.div>
   );
 }
